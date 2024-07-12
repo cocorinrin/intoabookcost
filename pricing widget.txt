@@ -1,0 +1,55 @@
+function calculateEditingCost() {
+  // Retrieve user inputs
+  const bookType = document.getElementById('bookType').value;
+  const editType = document.querySelector('input[name="editType"]:checked').value;
+  const wordCount = parseInt(document.getElementById('wordCount').value);
+
+  // Define pricing model
+  const prices = {
+    'Picture Books': { threshold: 1000, dev: 375, line: 275, copy: 225, proof: 150 },
+    'Early Readers': { threshold: 2000, dev: 475, line: 375, copy: 275, proof: 175 },
+    'Chapter Books': { threshold: 15000, dev: 725, line: 575, copy: 400, proof: 275 },
+    'Middle Grade Books': { threshold: 60000, dev: 1595, line: 1395, copy: 725, proof: 495 },
+    'YA Books': { threshold: 90000, dev: 2395, line: 1595, copy: 925, proof: 595 },
+    'General Fiction': { threshold: 80000, dev: 2695, line: 1695, copy: 1295, proof: 795 },
+    'Non-Fiction Books': { threshold: 70000, dev: 3095, line: 1895, copy: 1595, proof: 1195 },
+    'Poetry Books': { threshold: 5000, dev: 195, line: 150, copy: 125, proof: 95 },
+    'Short Story Collections': { threshold: 50000, dev: 1695, line: 1095, copy: 895, proof: 645 },
+    'Cookbooks': { threshold: 50000, dev: 895, line: 725, copy: 575, proof: 295 },
+    'Art Books/Coffee Table Books': { threshold: 30000, dev: 1295, line: 825, copy: 650, proof: 450 },
+    'Self-Help Books': { threshold: 70000, dev: 2895, line: 1895, copy: 1495, proof: 1095 },
+    'Business Knowledge Books': { threshold: 80000, dev: 3295, line: 2095, copy: 1695, proof: 1295 },
+    'How-To Books': { threshold: 60000, dev: 2495, line: 1595, copy: 1295, proof: 975 }
+  };
+
+  // Define per-word rates for exceeding threshold
+  const perWordRates = {
+    dev: 0.07,
+    line: 0.04,
+    copy: 0.03,
+    proof: 0.02
+  };
+
+  // Calculate base price and additional costs
+  const basePrice = prices[bookType][editType];
+  const threshold = prices[bookType].threshold;
+  let totalCost = basePrice;
+
+  if (wordCount > threshold) {
+    const extraWords = wordCount - threshold;
+    const additionalCost = extraWords * perWordRates[editType];
+    totalCost += additionalCost;
+  }
+
+  // Display the total cost
+  document.getElementById('totalCost').textContent = `${totalCost.toFixed(2)}`;
+
+  // Optional: Display breakdown of costs
+  const breakdownElement = document.getElementById('costBreakdown');
+  breakdownElement.innerHTML = `
+    <p>Base price: ${basePrice.toFixed(2)}</p>
+    <p>Word count: ${wordCount} (Threshold: ${threshold})</p>
+    ${wordCount > threshold ? `<p>Additional words: ${wordCount - threshold}</p>` : ''}
+    ${wordCount > threshold ? `<p>Additional cost: ${(totalCost - basePrice).toFixed(2)}</p>` : ''}
+  `;
+}
